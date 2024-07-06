@@ -17,8 +17,25 @@
         name: docker
         state: started
         enabled: yes
+
+    - name: Reinstall containerd
+      apt:
+        name: containerd
+        state: present
+        force: yes
+      notify:
+        - restart containerd
+
   handlers:
     - name: restart containerd
       systemd:
         name: containerd
         state: restarted
+=======
+          
+    - name: Reinstall containerd
+      apt:
+        name: containerd
+        state: present
+        force: yes
+>>>>>>> a31afd0 (Add task to reinstall containerd)
