@@ -17,3 +17,8 @@
         name: docker
         state: started
         enabled: yes
+  handlers:
+    - name: restart containerd
+      systemd:
+        name: containerd
+        state: restarted
