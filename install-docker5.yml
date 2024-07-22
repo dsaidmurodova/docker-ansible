@@ -1,0 +1,59 @@
+---
+- name: Install Docker on worker nodes
+  hosts: workers
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Remove existing Docker packages
+      apt:
+        name:
+          - docker.io
+          - docker-ce
+          - docker-ce-cli
+        state: absent
+        purge: yes
+
+    - name: Remove additional Docker dependencies and clean up
+      shell: |
+        apt-get remove -y docker docker-engine docker.io containerd runc
+        apt-get autoremove -y
+        rm -rf /var/lib/docker
+        rm -rf /var/lib/containerd
+
+    - name: Clean up Docker configurations
+      shell: |
+        rm -rf /etc/docker
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Remove containerd
+      apt:
+        name: containerd
+        state: absent
+      notify:
+        - restart containerd
+
+    - name: Install containerd
+      apt:
+        name: containerd
+        state: present
+      notify:
+        - restart containerd
+
+  handlers:
+    - name: restart containerd
+      systemd:
+        name: containerd
+        state: restarted

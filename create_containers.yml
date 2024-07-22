@@ -1,0 +1,39 @@
+---
+- name: Create SSHD containers on worker nodes
+  hosts: workers
+  become: yes
+  tasks:
+    - name: Ensure Docker is installed
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull the SSHD image
+      docker_image:
+        name: l3002/sshd
+        source: pull
+
+    - name: Create SSHD container 1 on worker node
+      docker_container:
+        name: sshd_container_1
+        image: l3002/sshd
+        state: started
+        restart_policy: always
+        ports:
+          - "2224:22"  # Replace 2224 with an arbitrary host port if necessary
+
+    - name: Create SSHD container 2 on worker node
+      docker_container:
+        name: sshd_container_2
+        image: l3002/sshd
+        state: started
+        restart_policy: always
+        ports:
+          - "2223:22"  # Replace 2223 with an arbitrary host port if necessary

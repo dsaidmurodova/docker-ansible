@@ -31,11 +31,3 @@
       systemd:
         name: containerd
         state: restarted
-=======
-          
-    - name: Reinstall containerd
-      apt:
-        name: containerd
-        state: present
-        force: yes
->>>>>>> a31afd0 (Add task to reinstall containerd)
